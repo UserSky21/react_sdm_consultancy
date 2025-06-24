@@ -145,23 +145,72 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    fetch('http://localhost:5000/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
     console.log("Contact Form Submitted:", formData);
     alert("Thank you for reaching out! We'll get back to you soon.");
     setFormData({ name: "", email: "", phone: "", company: "", service: "", message: "", inquiryType: "general" });
     setSelectedService(null);
   };
 
-  const handleCareerSubmit = (e) => {
-    e.preventDefault();
-    console.log("Career Form Submitted:", { ...careerFormData, resumeFile });
+  const handleCareerSubmit = async (e) => {
+  e.preventDefault();
+
+  // Create FormData to send both text + file
+  const formData = new FormData();
+  formData.append("name", careerFormData.name);
+  formData.append("email", careerFormData.email);
+  formData.append("phone", careerFormData.phone);
+  formData.append("position", careerFormData.position || selectedPosition);  // fallback
+  formData.append("experience", careerFormData.experience);
+  formData.append("coverLetter", careerFormData.coverLetter);
+  formData.append("portfolio", careerFormData.portfolio);
+  formData.append("resume", resumeFile);  // your PDF file
+
+  try {
+    const response = await fetch("http://localhost:5000/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload");
+    }
+
+    const result = await response.json();
+    console.log("Server Response:", result);
+
     alert("Thank you for your application! We'll review your resume and get back to you soon.");
-    setCareerFormData({ name: "", email: "", phone: "", position: "", experience: "", coverLetter: "", portfolio: "" });
+
+    // Clear form fields
+    setCareerFormData({
+      name: "",
+      email: "",
+      phone: "",
+      position: "",
+      experience: "",
+      coverLetter: "",
+      portfolio: ""
+    });
     setSelectedPosition(null);
     setResumeFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  };
+
+  } catch (error) {
+    console.error("Error uploading form:", error);
+    alert("Something went wrong while submitting the form. Please try again.");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 text-gray-800 relative overflow-hidden">

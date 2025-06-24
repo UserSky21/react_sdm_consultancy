@@ -91,6 +91,16 @@ export default function Career() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    fetch("http://localhost:5000/careers", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(form),
+    });
+      
+
     setLoading(true);
     setTimeout(() => {
       setSubmitted(true);

@@ -110,6 +110,19 @@ export default function Counselling() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
+    fetch('http://localhost:5000/counsellor', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        service: selectedService,
+        preferredDate: selectedDate,
+        preferredTime: selectedTime,
+        ...formData
+      })
+    });
+
     console.log('Booking submitted:', { selectedService, selectedDate, selectedTime, formData });
     alert('Thank you! We\'ll confirm your appointment via email shortly.');
   };
@@ -159,7 +172,7 @@ export default function Counselling() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <h2 className="text-3xl font-bold text-gray-900 mb-8">Schedule Your Session</h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Service Selection */}
                 <div>
@@ -170,11 +183,10 @@ export default function Counselling() {
                     {services.map((service) => (
                       <div
                         key={service.id}
-                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                          selectedService === service.id
+                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${selectedService === service.id
                             ? 'border-blue-500 bg-blue-50'
                             : 'border-gray-200 hover:border-blue-300'
-                        }`}
+                          }`}
                         onClick={() => setSelectedService(service.id)}
                       >
                         <div className="flex items-start gap-3">
@@ -314,10 +326,10 @@ export default function Counselling() {
                       className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="">Select budget range</option>
-                      <option value="under-10k">Under $10,000</option>
-                      <option value="10k-50k">$10,000 - $50,000</option>
-                      <option value="50k-100k">$50,000 - $100,000</option>
-                      <option value="100k-plus">$100,000+</option>
+                      <option value="under-10k">Under ₹10,000</option>
+                      <option value="10k-50k">₹10,000 - ₹50,000</option>
+                      <option value="50k-100k">₹50,000 - ₹100,000</option>
+                      <option value="100k-plus">₹100,000+</option>
                       <option value="not-sure">Not sure yet</option>
                     </select>
                   </div>

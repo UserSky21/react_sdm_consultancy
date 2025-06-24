@@ -107,9 +107,7 @@ const Team = () => {
               <p className="text-sm text-blue-600 mb-3 font-semibold">{member.role}</p>
               <p className="text-sm text-gray-600 text-center leading-relaxed">{member.bio}</p>
               <p className="text-xs text-gray-500 mt-3 italic text-center">{member.expertise}</p>
-              <a href="#" className="mt-4 text-blue-600 font-semibold hover:underline text-sm transition-colors">
-                View Profile →
-              </a>
+              
             </div>
           ))}
         </div>

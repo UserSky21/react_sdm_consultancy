@@ -1,9 +1,9 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import Lottie from 'lottie-react';
 import { ParallaxProvider } from 'react-scroll-parallax';
 import innovationAnimation1 from '../assets/innovation.json';
-import { ShieldCheck, BrainCircuit, LaptopMinimal, Mail, Phone, MapPin, ArrowRight, CheckCircle, Star, Users, Award, Zap, Sparkles } from 'lucide-react';
+import { ShieldCheck, BrainCircuit, LaptopMinimal, Mail, Phone, MapPin, ArrowRight, CheckCircle, Star, Users, Award, Zap, Sparkles, HelpCircle, X } from 'lucide-react';
 import { Typewriter } from 'react-simple-typewriter';
 import Marquee from 'react-fast-marquee';
 import 'slick-carousel/slick/slick.css';
@@ -21,6 +21,7 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -272,36 +273,54 @@ export default function Home() {
             </div>
           </section>
           {/* Why Choose Us */}
-          <section className="py-20 px-4 sm:px-6 md:px-10 bg-blue-50">
+          <section className="py-20 px-4 sm:px-6 md:px-10 bg-gradient-to-br from-blue-900 to-gray-900 text-white">
             <motion.h2
-              className="text-3xl font-bold text-center mb-10 text-blue-800"
+              className="text-4xl font-extrabold text-center mb-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              Why Choose SDM?
+              WHY CHOOSE US?
             </motion.h2>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {[
-                "Client-Centric Approach",
-                "Proven Track Record",
-                "Agile Development",
-                "Dedicated Support",
-                "Security First",
-                "Transparent Communication"
-              ].map((text, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: idx * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                >
-                  <p className="text-blue-700 font-medium text-sm">{text}</p>
-                </motion.div>
-              ))}
+            <motion.p 
+              className="text-lg text-center text-blue-200 mb-16"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              Find the right experts with the right team
+            </motion.p>
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+              
+              {/* Left Features */}
+              <div className="flex flex-col gap-12 w-full md:w-1/3 items-center md:items-end">
+                <Feature text="Client Centric Approach" description="24/7 assistance and a client-first mindset." alignment="right" />
+                <Feature text="Dedicated Support" description="Skilled professionals at your service." alignment="right" />
+                <Feature text="Agile Development" description="Agile, security-focused, and results-driven." alignment="right" />
+              </div>
+
+              {/* Central Question Mark */}
+              <motion.div 
+                className="relative my-8 md:my-0"
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7, ease: "backOut" }}
+                viewport={{ once: true }}
+              >
+                <HelpCircle className="w-48 h-48 text-blue-400 opacity-20" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                   <HelpCircle className="w-32 h-32 text-blue-300 opacity-40 animate-pulse" />
+                </div>
+              </motion.div>
+
+              {/* Right Features */}
+              <div className="flex flex-col gap-12 w-full md:w-1/3 items-center md:items-start">
+                <Feature text="Proven Track Record" description="Proven track record of delivering results." alignment="left" />
+                <Feature text="Transparent Communication" description="Expanding your presence with smart marketing." alignment="left" />
+                <Feature text="Security with Modern Solutions" description="Innovative solutions for modern challenges." alignment="left" />
+              </div>
             </div>
           </section>
 
@@ -492,11 +511,12 @@ export default function Home() {
               ].map((proj, idx) => (
                 <motion.div
                   key={idx}
-                  className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                  className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: idx * 0.2 }}
                   viewport={{ once: true }}
+                  onClick={() => setSelectedProject(proj)}
                 >
                   <div className="w-full h-48 flex items-center justify-center mb-6 bg-white rounded-2xl shadow-xl border-4 border-blue-200 overflow-hidden">
                     <img src={proj.image} alt={proj.title} className="w-full h-full object-contain" />
@@ -574,35 +594,100 @@ export default function Home() {
             </div>
           </section>
         </div>
+
+        <AnimatePresence>
+          {selectedProject && (
+            <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+          )}
+        </AnimatePresence>
       </div>
     </ParallaxProvider>
   );
 }
 
 function Testimonial({ text, author, company, rating }) {
+  const stars = Array(rating).fill(0);
+
   return (
     <motion.div
-      className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-      whileHover={{ scale: 1.02 }}
+      className="bg-gray-50 p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      viewport={{ once: true }}
     >
-      <div className="flex items-center gap-1 mb-4">
-        {[...Array(rating)].map((_, i) => (
-          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-        ))}
-      </div>
-      <blockquote className="italic text-gray-800 mb-4 text-sm leading-relaxed">"{text}"</blockquote>
+      <p className="text-gray-700 italic mb-4">"{text}"</p>
       <div>
-        <p className="font-semibold text-blue-700 text-sm">{author}</p>
-        <p className="text-gray-500 text-xs">{company}</p>
+        <div className="flex items-center mb-2">
+          {stars.map((_, i) => <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />)}
+        </div>
+        <p className="font-semibold text-blue-700">{author}</p>
+        <p className="text-sm text-gray-500">{company}</p>
       </div>
+    </motion.div>
+  );
+}
+
+function Feature({ text, description, alignment }) {
+  const textAlign = alignment === 'right' ? 'text-right' : 'text-left';
+  const itemAlign = alignment === 'right' ? 'items-end' : 'items-start';
+
+  return (
+    <motion.div
+      className={`flex flex-col ${itemAlign} gap-1`}
+      initial={{ opacity: 0, x: alignment === 'right' ? 50 : -50 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+    >
+      <h3 className="text-xl font-bold text-white">{text}</h3>
+      <p className="text-blue-200">{description}</p>
+      <div className="w-24 h-0.5 bg-blue-400 mt-2"/>
     </motion.div>
   );
 }
 
 function WaveBottom() {
   return (
-    <svg className="w-full h-20" viewBox="0 0 1440 320">
-      <path fill="#fff" d="M0,224L1440,320L1440,320L0,320Z" />
-    </svg>
+    <div className="absolute bottom-0 left-0 w-full h-20 overflow-hidden" style={{ transform: 'translateY(1px)' }}>
+      <svg className="w-full h-20" viewBox="0 0 1440 320">
+        <path fill="#fff" d="M0,224L1440,320L1440,320L0,320Z" />
+      </svg>
+    </div>
+  );
+}
+
+function ProjectModal({ project, onClose }) {
+  return (
+    <motion.div
+      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden"
+        initial={{ scale: 0.8, y: 50 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.8, y: 50 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="relative">
+          <img src={project.image} alt={project.title} className="w-full h-64 object-cover" />
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 bg-white/50 p-2 rounded-full hover:bg-white transition-colors"
+          >
+            <X className="w-6 h-6 text-gray-800" />
+          </button>
+        </div>
+        <div className="p-8">
+          <h2 className="text-3xl font-bold text-blue-800 mb-4">{project.title}</h2>
+          <p className="text-lg text-gray-700">{project.desc}</p>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
