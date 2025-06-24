@@ -110,7 +110,7 @@ export default function Counselling() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
-    fetch('http://localhost:5000/counsellor', {
+    fetch('https://react-sdm-consultancy.vercel.app/counsellor', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
